@@ -15,10 +15,18 @@
       "cache": true
     },
     "test": {
-      "cache": true
+      "cache": true,
+      "inputs": [
+        "default",
+        "^production"
+      ]
     },
     "e2e": {
-      "cache": true
+      "cache": true,
+      "inputs": [
+        "default",
+        "^production"
+      ]
     }
   },
   "namedInputs": {
@@ -27,12 +35,21 @@
       "sharedGlobals"
     ],
     "production": [
-      "default"
+      "default",
+      "!{projectRoot}/**/?(*.)+(spec|test).[jt]s?(x)?(.snap)",
+      "!{projectRoot}/tsconfig.spec.json"
     ],
     "sharedGlobals": []
   },
   "plugins": [
     "@nxlv/python"
   ],
-  "nxCloudAccessToken": "YzA4ZDdkNjctZGNhZi00MmY1LTkxZTMtYWZkNjk1N2JlY2UyfHJlYWQtd3JpdGU="
+  "nxCloudAccessToken": "YzA4ZDdkNjctZGNhZi00MmY1LTkxZTMtYWZkNjk1N2JlY2UyfHJlYWQtd3JpdGU=",
+  "generators": {
+    "@nx/react": {
+      "application": {
+        "babel": true
+      }
+    }
+  }
 }
