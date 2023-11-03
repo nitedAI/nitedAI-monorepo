@@ -31,5 +31,8 @@
     ],
     "sharedGlobals": []
   },
+  "plugins": [
+    "@nxlv/python"
+  ],
   "nxCloudAccessToken": "YzA4ZDdkNjctZGNhZi00MmY1LTkxZTMtYWZkNjk1N2JlY2UyfHJlYWQtd3JpdGU="
 }

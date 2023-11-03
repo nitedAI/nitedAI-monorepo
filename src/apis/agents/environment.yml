@@ -1,0 +1,11 @@
+name: apis-agents
+channels:
+  - defaults
+  - conda-forge
+dependencies:
+  - python=3.10.8
+  - pip
+  - pip:
+    - openai
+    - pymemgpt
+    - pyautogen
