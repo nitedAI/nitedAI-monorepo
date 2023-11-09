@@ -39,6 +39,8 @@ const ICONS = {
   ecommerce: icon('ic_ecommerce'),
   analytics: icon('ic_analytics'),
   dashboard: icon('ic_dashboard'),
+  hashtag: icon('ic_hashtag'),
+  design: icon('ic_design'),
 };
 
 // ----------------------------------------------------------------------
@@ -49,14 +51,19 @@ export function useNavData() {
       // OVERVIEW
       // ----------------------------------------------------------------------
       {
-        subheader: 'overview v5.6.0',
+        subheader: 'Channels',
         items: [
-          { title: 'one', path: paths.dashboard.root, icon: ICONS.dashboard },
-          { title: 'two', path: paths.dashboard.two, icon: ICONS.ecommerce },
+          { title: 'general', path: paths.dashboard.root, icon: ICONS.hashtag, info: '2' },
+          { title: 'intros', path: paths.dashboard.two, icon: ICONS.hashtag },
           {
-            title: 'three',
+            title: 'announcements',
             path: paths.dashboard.three,
-            icon: ICONS.analytics,
+            icon: ICONS.hashtag,
+          },
+          {
+            title: 'personal',
+            path: paths.dashboard.three,
+            icon: ICONS.lock,
           },
         ],
       },
@@ -64,16 +71,26 @@ export function useNavData() {
       // MANAGEMENT
       // ----------------------------------------------------------------------
       {
-        subheader: 'management',
+        subheader: 'Teams (Coming soon)',
         items: [
           {
-            title: 'user',
+            title: 'design',
             path: paths.dashboard.group.root,
-            icon: ICONS.user,
+            icon: ICONS.design,
             children: [
-              { title: 'four', path: paths.dashboard.group.root },
-              { title: 'five', path: paths.dashboard.group.five },
-              { title: 'six', path: paths.dashboard.group.six },
+              { title: 'ideas', path: paths.dashboard.group.root, icon: ICONS.hashtag },
+              { title: 'concepts', path: paths.dashboard.group.five, icon: ICONS.hashtag },
+              { title: 'decisions', path: paths.dashboard.group.six, icon: ICONS.lock },
+            ],
+          },
+          {
+            title: 'finance',
+            path: paths.dashboard.group.root,
+            icon: ICONS.banking,
+            children: [
+              { title: 'payroll', path: paths.dashboard.group.root, icon: ICONS.hashtag, info: '5' },
+              { title: 'invoices', path: paths.dashboard.group.five, icon: ICONS.hashtag },
+              { title: 'banking', path: paths.dashboard.group.six, icon: ICONS.lock },
             ],
           },
         ],

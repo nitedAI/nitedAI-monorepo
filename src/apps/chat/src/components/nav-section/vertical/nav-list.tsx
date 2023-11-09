@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-
+import { alpha, styled } from '@mui/material/styles';
 import Collapse from '@mui/material/Collapse';
 
 import { usePathname } from 'src/routes/hooks';
@@ -9,6 +9,32 @@ import NavItem from './nav-item';
 import { NavListProps, NavSubListProps } from '../types';
 
 // ----------------------------------------------------------------------
+
+const CollapseStyled = styled(Collapse)(({ theme}) => {
+  const color = theme.palette.text.primary;
+  const backgroundColor = theme.palette.background.default;
+
+  return {
+    '& .MuiCollapse-wrapperInner': {
+      position: 'relative',
+      top: 0,
+      left: 0,
+      width: '100%',
+      backgroundColor,
+      '&::before': {
+        zIndex: 9,
+        content: "''",
+        width: 4,
+        height: '100%',
+        position: 'absolute',
+        left: 0,
+        top: 0,
+        borderRadius: '0 4px 4px 0',
+        backgroundColor: alpha(color, 0.16),
+      },
+    },
+  };
+});
 
 export default function NavList({ data, depth, slotProps }: NavListProps) {
   const pathname = usePathname();
@@ -62,9 +88,9 @@ export default function NavList({ data, depth, slotProps }: NavListProps) {
       />
 
       {!!data.children && (
-        <Collapse in={openMenu} unmountOnExit>
+        <CollapseStyled in={openMenu} unmountOnExit>
           <NavSubList data={data.children} depth={depth} slotProps={slotProps} />
-        </Collapse>
+        </CollapseStyled>
       )}
     </>
   );

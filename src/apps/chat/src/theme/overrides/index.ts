@@ -21,6 +21,7 @@ import { rating } from './components/rating';
 import { slider } from './components/slider';
 import { button } from './components/button';
 import { select } from './components/select';
+import { toolbar } from './components/toolbar';
 import { defaultProps } from './default-props';
 import { switches } from './components/switch';
 import { tooltip } from './components/tooltip';
@@ -71,6 +72,7 @@ export function componentsOverrides(theme: Theme) {
     avatar(theme),
     slider(theme),
     drawer(theme),
+    toolbar(theme),
     stepper(theme),
     tooltip(theme),
     popover(theme),

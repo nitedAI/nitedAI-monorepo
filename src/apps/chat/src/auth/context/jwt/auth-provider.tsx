@@ -21,12 +21,16 @@ enum Types {
   LOGOUT = 'LOGOUT',
 }
 
+type Workspaces = Array<object>;
+
 type Payload = {
   [Types.INITIAL]: {
     user: AuthUserType;
+    workspaces: Workspaces;
   };
   [Types.LOGIN]: {
     user: AuthUserType;
+    workspaces: Workspaces;
   };
   [Types.REGISTER]: {
     user: AuthUserType;
@@ -48,12 +52,14 @@ const reducer = (state: AuthStateType, action: ActionsType) => {
     return {
       loading: false,
       user: action.payload.user,
+      workspaces: action.payload.workspaces
     };
   }
   if (action.type === Types.LOGIN) {
     return {
       ...state,
       user: action.payload.user,
+      workspaces: action.payload.workspaces,
     };
   }
   if (action.type === Types.REGISTER) {
@@ -74,6 +80,8 @@ const reducer = (state: AuthStateType, action: ActionsType) => {
 // ----------------------------------------------------------------------
 
 const STORAGE_KEY = 'accessToken';
+const USER_KEY = 'user';
+const WORKSPACES_KEY = 'workspaces';
 
 type Props = {
   children: React.ReactNode;
@@ -89,9 +97,11 @@ export function AuthProvider({ children }: Props) {
       if (accessToken && isValidToken(accessToken)) {
         setSession(accessToken);
 
-        const res = await axios.get(endpoints.auth.me);
+        const sessionUser = sessionStorage.getItem(USER_KEY);
+        const user = sessionUser ? JSON.parse(sessionUser) : {};
 
-        const { user } = res.data;
+        const sessionWOrkspaces = sessionStorage.getItem(USER_KEY);
+        const workspaces = sessionWOrkspaces ? JSON.parse(sessionWOrkspaces) : {};
 
         dispatch({
           type: Types.INITIAL,
@@ -100,6 +110,7 @@ export function AuthProvider({ children }: Props) {
               ...user,
               accessToken,
             },
+            workspaces
           },
         });
       } else {
@@ -107,6 +118,7 @@ export function AuthProvider({ children }: Props) {
           type: Types.INITIAL,
           payload: {
             user: null,
+            workspaces: []
           },
         });
       }
@@ -116,6 +128,7 @@ export function AuthProvider({ children }: Props) {
         type: Types.INITIAL,
         payload: {
           user: null,
+          workspaces: []
         },
       });
     }
@@ -134,9 +147,11 @@ export function AuthProvider({ children }: Props) {
 
     const res = await axios.post(endpoints.auth.login, data);
 
-    const { accessToken, user } = res.data;
+    const { accessToken, user, workspaces } = res.data;
 
     setSession(accessToken);
+    sessionStorage.setItem(USER_KEY, JSON.stringify(user));
+    sessionStorage.setItem(WORKSPACES_KEY, JSON.stringify(workspaces));
 
     dispatch({
       type: Types.LOGIN,
@@ -145,6 +160,7 @@ export function AuthProvider({ children }: Props) {
           ...user,
           accessToken,
         },
+        workspaces
       },
     });
   }, []);
@@ -181,6 +197,8 @@ export function AuthProvider({ children }: Props) {
   // LOGOUT
   const logout = useCallback(async () => {
     setSession(null);
+    sessionStorage.removeItem(USER_KEY);
+    sessionStorage.removeItem(WORKSPACES_KEY);
     dispatch({
       type: Types.LOGOUT,
     });

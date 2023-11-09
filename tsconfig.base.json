@@ -15,7 +15,16 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
-      "@datasets/maindb": ["src/datasets/maindb/src/index.ts"]
+      "@components": ["src/libs/components/src/index.ts"],
+      "@components/*": ["src/libs/components/src/*"],
+      "@configs": ["src/libs/configs/src/index.ts"],
+      "@configs/*": ["src/libs/configs/src/*"],
+      "@datasets": ["src/datasets/index.ts"],
+      "@hooks": ["src/libs/hooks/src/index.ts"],
+      "@hooks/*": ["src/libs/hooks/src/*"],
+      "@ts": ["src/libs/types/index.ts"],
+      "@ts/*": ["src/libs/types/*"],
+      "src/*": ["src/apps/chat/src/*"]
     }
   },
   "exclude": ["node_modules", "tmp"]

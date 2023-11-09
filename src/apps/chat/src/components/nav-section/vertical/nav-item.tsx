@@ -162,15 +162,15 @@ const StyledNavItem = styled(ListItemButton, {
   const baseStyles = {
     item: {
       marginBottom: 4,
-      borderRadius: 8,
+      borderRadius:4,
       color: theme.palette.text.secondary,
-      padding: theme.spacing(0.5, 1, 0.5, 1.5),
+      padding: theme.spacing(0.2, 1, 0.2, 1.5),
     },
     icon: {
-      width: 24,
+      width: 14,
       height: 24,
       flexShrink: 0,
-      marginRight: theme.spacing(2),
+      marginRight: theme.spacing(1),
     },
     label: {
       ...noWrapStyles,
@@ -186,6 +186,12 @@ const StyledNavItem = styled(ListItemButton, {
     info: {
       display: 'inline-flex',
       marginLeft: theme.spacing(0.75),
+      borderRadius: '3px',
+      color: theme.palette.text.secondary,
+      backgroundColor: theme.palette.action.selected,
+      padding: theme.spacing(0.25, 0.75),
+      fontSize: theme.typography.pxToRem(12),
+      fontWeight: theme.typography.fontWeightBold,
     },
     arrow: {
       flexShrink: 0,
@@ -197,7 +203,7 @@ const StyledNavItem = styled(ListItemButton, {
     // Root item
     ...(!subItem && {
       ...baseStyles.item,
-      minHeight: 44,
+      minHeight: 24,
       '& .icon': {
         ...baseStyles.icon,
       },
@@ -233,7 +239,7 @@ const StyledNavItem = styled(ListItemButton, {
     // Sub item
     ...(subItem && {
       ...baseStyles.item,
-      minHeight: 36,
+      minHeight: 24,
       '& .icon': {
         ...baseStyles.icon,
       },
