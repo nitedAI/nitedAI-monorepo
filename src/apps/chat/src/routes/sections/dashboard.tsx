@@ -8,9 +8,8 @@ import { LoadingScreen } from 'src/components/loading-screen';
 
 // ----------------------------------------------------------------------
 
-const IndexPage = lazy(() => import('src/pages/dashboard/one'));
-const PageTwo = lazy(() => import('src/pages/dashboard/two'));
-const PageThree = lazy(() => import('src/pages/dashboard/three'));
+const IndexPage = lazy(() => import('src/pages/chat/Chat'));
+const Chat = lazy(() => import('src/pages/chat/Chat'));
 const PageFour = lazy(() => import('src/pages/dashboard/four'));
 const PageFive = lazy(() => import('src/pages/dashboard/five'));
 const PageSix = lazy(() => import('src/pages/dashboard/six'));
@@ -19,7 +18,7 @@ const PageSix = lazy(() => import('src/pages/dashboard/six'));
 
 export const dashboardRoutes = [
   {
-    path: 'dashboard',
+    path: ':slug',
     element: (
       <AuthGuard>
         <DashboardLayout>
@@ -31,8 +30,7 @@ export const dashboardRoutes = [
     ),
     children: [
       { element: <IndexPage />, index: true },
-      { path: 'two', element: <PageTwo /> },
-      { path: 'three', element: <PageThree /> },
+      { path: ':chat_id', element: <Chat /> },
       {
         path: 'group',
         children: [

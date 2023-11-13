@@ -1,168 +1,74 @@
-import { useMemo, useEffect, useReducer, useCallback } from 'react';
+import { supabase } from '@utils/supabase';
+import { useMemo, useState, useEffect, useCallback } from 'react';
 
-import axios, { endpoints } from 'src/utils/axios';
-
+import { AuthStateType } from '../../types';
 import { AuthContext } from './auth-context';
-import { setSession, isValidToken } from './utils';
-import { AuthUserType, ActionMapType, AuthStateType } from '../../types';
-
-// ----------------------------------------------------------------------
-
-// NOTE:
-// We only build demo at basic level.
-// Customer will need to do some extra handling yourself if you want to extend the logic and other features...
-
-// ----------------------------------------------------------------------
-
-enum Types {
-  INITIAL = 'INITIAL',
-  LOGIN = 'LOGIN',
-  REGISTER = 'REGISTER',
-  LOGOUT = 'LOGOUT',
-}
-
-type Workspaces = Array<object>;
-
-type Payload = {
-  [Types.INITIAL]: {
-    user: AuthUserType;
-    workspaces: Workspaces;
-  };
-  [Types.LOGIN]: {
-    user: AuthUserType;
-    workspaces: Workspaces;
-  };
-  [Types.REGISTER]: {
-    user: AuthUserType;
-  };
-  [Types.LOGOUT]: undefined;
-};
-
-type ActionsType = ActionMapType<Payload>[keyof ActionMapType<Payload>];
 
 // ----------------------------------------------------------------------
 
 const initialState: AuthStateType = {
   user: null,
+  workspaces: null,
   loading: true,
-};
-
-const reducer = (state: AuthStateType, action: ActionsType) => {
-  if (action.type === Types.INITIAL) {
-    return {
-      loading: false,
-      user: action.payload.user,
-      workspaces: action.payload.workspaces
-    };
-  }
-  if (action.type === Types.LOGIN) {
-    return {
-      ...state,
-      user: action.payload.user,
-      workspaces: action.payload.workspaces,
-    };
-  }
-  if (action.type === Types.REGISTER) {
-    return {
-      ...state,
-      user: action.payload.user,
-    };
-  }
-  if (action.type === Types.LOGOUT) {
-    return {
-      ...state,
-      user: null,
-    };
-  }
-  return state;
+  session: null,
+  error: null,
 };
 
 // ----------------------------------------------------------------------
-
-const STORAGE_KEY = 'accessToken';
-const USER_KEY = 'user';
-const WORKSPACES_KEY = 'workspaces';
 
 type Props = {
   children: React.ReactNode;
 };
 
+const STORAGE_KEY = 'accessToken';
+const USER_KEY = 'user';
+const WORKSPACES_KEY = 'workspaces';
+
 export function AuthProvider({ children }: Props) {
-  const [state, dispatch] = useReducer(reducer, initialState);
-
-  const initialize = useCallback(async () => {
-    try {
-      const accessToken = sessionStorage.getItem(STORAGE_KEY);
-
-      if (accessToken && isValidToken(accessToken)) {
-        setSession(accessToken);
-
-        const sessionUser = sessionStorage.getItem(USER_KEY);
-        const user = sessionUser ? JSON.parse(sessionUser) : {};
-
-        const sessionWOrkspaces = sessionStorage.getItem(USER_KEY);
-        const workspaces = sessionWOrkspaces ? JSON.parse(sessionWOrkspaces) : {};
-
-        dispatch({
-          type: Types.INITIAL,
-          payload: {
-            user: {
-              ...user,
-              accessToken,
-            },
-            workspaces
-          },
-        });
-      } else {
-        dispatch({
-          type: Types.INITIAL,
-          payload: {
-            user: null,
-            workspaces: []
-          },
-        });
-      }
-    } catch (error) {
-      console.error(error);
-      dispatch({
-        type: Types.INITIAL,
-        payload: {
-          user: null,
-          workspaces: []
-        },
-      });
-    }
-  }, []);
+  const [state, dispatch] = useState(initialState);
 
   useEffect(() => {
-    initialize();
-  }, [initialize]);
+    supabase.auth.getSession().then(({ data }) => {
+      if (data?.session) dispatch({
+        session: data.session,
+        user: data.session.user,
+        loading: false,
+        error: null,
+      });
+    });
+
+    const { data } = supabase.auth.onAuthStateChange((_event) => {
+      dispatch({ loading: false });
+    });
+
+    return () => data.subscription.unsubscribe();
+  }, []);
 
   // LOGIN
   const login = useCallback(async (email: string, password: string) => {
-    const data = {
+
+    const { data, error } = await supabase.auth.signInWithPassword({
       email,
       password,
+    });
+
+    const { data: workspaces, error: userError } = await supabase.rpc('get_user_data_and_workspaces', { user_uuid: data?.user?.id });
+
+    const newData: AuthStateType = {
+      session: data.session,
+      user: {
+        aud: 'authenticated',
+        ...workspaces.user,
+      },
+      workspaces: workspaces.workspaces,
+      loading: false,
+      error: error || userError,
     };
 
-    const res = await axios.post(endpoints.auth.login, data);
+    sessionStorage.setItem(USER_KEY, JSON.stringify(workspaces.user));
+    sessionStorage.setItem(WORKSPACES_KEY, JSON.stringify(workspaces.workspaces));
+    dispatch(newData);
 
-    const { accessToken, user, workspaces } = res.data;
-
-    setSession(accessToken);
-    sessionStorage.setItem(USER_KEY, JSON.stringify(user));
-    sessionStorage.setItem(WORKSPACES_KEY, JSON.stringify(workspaces));
-
-    dispatch({
-      type: Types.LOGIN,
-      payload: {
-        user: {
-          ...user,
-          accessToken,
-        },
-        workspaces
-      },
-    });
   }, []);
 
   // REGISTER
@@ -175,38 +81,23 @@ export function AuthProvider({ children }: Props) {
         lastName,
       };
 
-      const res = await axios.post(endpoints.auth.register, data);
-
-      const { accessToken, user } = res.data;
-
-      sessionStorage.setItem(STORAGE_KEY, accessToken);
-
-      dispatch({
-        type: Types.REGISTER,
-        payload: {
-          user: {
-            ...user,
-            accessToken,
-          },
-        },
-      });
     },
     []
   );
 
   // LOGOUT
   const logout = useCallback(async () => {
-    setSession(null);
     sessionStorage.removeItem(USER_KEY);
     sessionStorage.removeItem(WORKSPACES_KEY);
-    dispatch({
-      type: Types.LOGOUT,
-    });
+    const { error } = await supabase.auth.signOut();
+    if (error) {
+      console.error(error);
+    }
   }, []);
 
   // ----------------------------------------------------------------------
 
-  const checkAuthenticated = state.user ? 'authenticated' : 'unauthenticated';
+  const checkAuthenticated = state?.user?.aud === 'authenticated' ? 'authenticated' : 'unauthenticated';
 
   const status = state.loading ? 'loading' : checkAuthenticated;
 

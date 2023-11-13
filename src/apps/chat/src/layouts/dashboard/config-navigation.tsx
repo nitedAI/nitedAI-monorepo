@@ -3,15 +3,12 @@ import { useMemo } from 'react';
 import { paths } from 'src/routes/paths';
 
 import SvgColor from 'src/components/svg-color';
+import { useGetChannelsByWorkspaceSlug } from '@hooks/useGetChannelsByWorkspaceSlug';
 
 // ----------------------------------------------------------------------
 
 const icon = (name: string) => (
   <SvgColor src={`/assets/icons/navbar/${name}.svg`} sx={{ width: 1, height: 1 }} />
-  // OR
-  // <Iconify icon="fluent:mail-24-filled" />
-  // https://icon-sets.iconify.design/solar/
-  // https://www.streamlinehq.com/icons
 );
 
 const ICONS = {
@@ -46,26 +43,19 @@ const ICONS = {
 // ----------------------------------------------------------------------
 
 export function useNavData() {
+  const channels = useGetChannelsByWorkspaceSlug();
+
   const data = useMemo(
     () => [
       // OVERVIEW
       // ----------------------------------------------------------------------
       {
         subheader: 'Channels',
-        items: [
-          { title: 'general', path: paths.dashboard.root, icon: ICONS.hashtag, info: '2' },
-          { title: 'intros', path: paths.dashboard.two, icon: ICONS.hashtag },
-          {
-            title: 'announcements',
-            path: paths.dashboard.three,
-            icon: ICONS.hashtag,
-          },
-          {
-            title: 'personal',
-            path: paths.dashboard.three,
-            icon: ICONS.lock,
-          },
-        ],
+        items: channels?.map((channel) => ({
+          title: channel.name,
+          path: channel.id,
+          icon: channel.is_private ? ICONS.lock : ICONS.hashtag,
+        })),
       },
 
       // MANAGEMENT
@@ -96,7 +86,7 @@ export function useNavData() {
         ],
       },
     ],
-    []
+    [channels],
   );
 
   return data;

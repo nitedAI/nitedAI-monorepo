@@ -24,6 +24,8 @@
       "@hooks/*": ["src/libs/hooks/src/*"],
       "@ts": ["src/libs/types/index.ts"],
       "@ts/*": ["src/libs/types/*"],
+      "@utils": ["src/libs/utils/src/index.ts"],
+      "@utils/*": ["src/libs/utils/src/*"],
       "src/*": ["src/apps/chat/src/*"]
     }
   },

@@ -1,7 +1,6 @@
 import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
-
-import { useMockedUser } from 'src/hooks/use-mocked-user';
+import { getSession } from '@utils/getSession';
 
 import { hideScroll } from 'src/theme/css';
 
@@ -13,24 +12,14 @@ import { NAV } from '../config-layout';
 
 interface Workspace {
   id: string;
-  name: string;
+  title: string;
   image: string;
+  role: string;
+  path: string;
 }
 
 export default function NavWorkspaces() {
-  const sessionWorkspaces = sessionStorage.getItem('workspaces');
-  const workspaces = sessionWorkspaces ? JSON.parse(sessionWorkspaces) : [];
-  const user = sessionStorage.getItem('user');
-
-  const navData = workspaces.map((w: Workspace) => {
-    return {
-      id: w.id,
-      title: w.name,
-      path: '/dashboard',
-      image: w.image,
-      info: '0',
-    }
-  });
+  const { workspaces, user } = getSession(['workspaces', 'user']);
 
   return (
     <Box
@@ -52,7 +41,7 @@ export default function NavWorkspaces() {
         }}
       >
         <NavMini
-          data={navData}
+          data={workspaces}
           slotProps={{
             currentRole: user?.role,
           }}

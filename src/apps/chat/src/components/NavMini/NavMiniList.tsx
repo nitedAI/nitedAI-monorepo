@@ -24,8 +24,6 @@ export default function NavMiniList({ data, depth = 1, slotProps }: NavListProps
         disabled={data.disabled}
         //
         depth={depth}
-        hasChild={!!data.children}
-        externalLink={data.path.includes('http')}
         currentRole={slotProps?.currentRole}
         //
         active={active}

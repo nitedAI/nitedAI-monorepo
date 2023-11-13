@@ -3,13 +3,11 @@ import { NavItemProps, NavItemStateProps } from '@ts/Nav';
 
 import Box from '@mui/material/Box';
 import Link from '@mui/material/Link';
-import Tooltip from '@mui/material/Tooltip';
 import { alpha, styled } from '@mui/material/styles';
 import ListItemButton from '@mui/material/ListItemButton';
 
 import { RouterLink } from 'src/routes/components';
 
-import Iconify from '../iconify';
 import NavAvatar from './NavAvatar';
 
 // ----------------------------------------------------------------------
@@ -22,20 +20,16 @@ const NavMiniItem = forwardRef<HTMLDivElement, NavItemProps>(
       image,
       info,
       disabled,
-      caption,
       roles,
       //
       open,
       depth,
       active,
-      hasChild,
-      externalLink,
       currentRole = 'admin',
       ...other
     },
     ref
   ) => {
-    const subItem = depth !== 1;
 
     const badgeVisible = Number(info) > 0;
 
@@ -56,20 +50,6 @@ const NavMiniItem = forwardRef<HTMLDivElement, NavItemProps>(
             {title}
           </Box>
         )}
-
-        {caption && (
-          <Tooltip title={caption} arrow placement="right">
-            <Iconify width={16} icon="eva:info-outline" className="caption" />
-          </Tooltip>
-        )}
-
-        {info && subItem && (
-          <Box component="span" className="info">
-            {info}
-          </Box>
-        )}
-
-        {hasChild && <Iconify width={16} className="arrow" icon="eva:arrow-ios-forward-fill" />}
       </StyledNavItem>
     );
 
@@ -78,28 +58,9 @@ const NavMiniItem = forwardRef<HTMLDivElement, NavItemProps>(
       return null;
     }
 
-    if (externalLink)
-      return (
-        <Link
-          href={path}
-          target="_blank"
-          rel="noopener"
-          color="inherit"
-          underline="none"
-          sx={{
-            width: 1,
-            ...(disabled && {
-              cursor: 'default',
-            }),
-          }}
-        >
-          {renderContent}
-        </Link>
-      );
-
     return (
       <Link
-        component={RouterLink}
+        component={disabled ? 'div' : RouterLink}
         href={path}
         color="inherit"
         underline="none"

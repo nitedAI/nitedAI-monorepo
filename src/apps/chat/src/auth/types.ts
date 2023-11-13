@@ -13,12 +13,41 @@ export type ActionMapType<M extends { [index: string]: any }> = {
       };
 };
 
-export type AuthUserType = null | Record<string, any>;
+export type AuthUserType = null | {
+  aud: string;
+  avatar_url: null | string;
+  created_at: string;
+  description: string;
+  updated_at: null | string;
+  user_id: string;
+  username: string;
+  workspaces_quota: number;
+};
+
+export type WorkspacesType = null | Array<{
+  disabled: boolean;
+  id: string;
+  image: null | string;
+  info: number;
+  path: string;
+  title: string;
+}>;
+
+export type AuthSessionType = null | {
+  access_token: string;
+  expires_at?: number;
+  expires_in: number;
+  refresh_token: string;
+  token_type: string;
+};
 
 export type AuthStateType = {
   status?: string;
   loading: boolean;
   user: AuthUserType;
+  workspaces: WorkspacesType;
+  session: AuthSessionType;
+  error: string | null;
 };
 
 // ----------------------------------------------------------------------

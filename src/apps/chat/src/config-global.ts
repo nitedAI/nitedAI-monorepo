@@ -13,7 +13,7 @@ export const AUTH0_API = {
 };
 
 // ROOT PATH AFTER LOGIN SUCCESSFUL
-export const PATH_AFTER_LOGIN = paths.dashboard.root; // as '/dashboard'
+export const PATH_AFTER_LOGIN = '/'; // as '/dashboard'
 
 export const SUPABASE_API_URL = import.meta.env.VITE_SUPABASE_API_URL;
 export const SUPABASE_DB_URL = import.meta.env.VITE_SUPABASE_DB_URL;
