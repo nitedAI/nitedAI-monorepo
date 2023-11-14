@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { Helmet } from 'react-helmet-async';
-import { fToNow, stringAvatar } from '@utils';
-import { useGetMessageByChannelId } from '@hooks/useGetMessageByChannelId';
+import { useGetMessageByChannelId, useGetAuthUser } from '@hooks';
+import { fToNow, stringAvatar, fetchSupabaseFunction } from '@utils';
+import { useParams } from 'react-router-dom';
 
 import SendIcon from '@mui/icons-material/Send';
 import { Box, Grid, Button, Avatar, TextField, Typography } from '@mui/material';
@@ -21,10 +22,16 @@ interface MessageProps {
 export default function Chat() {
   const [input, setInput] = useState('');
   const messages: MessageTypes[] = useGetMessageByChannelId();
+  const user_id = useGetAuthUser();
+  const { chat_id } = useParams();
 
   const handleSend = () => {
     if (input.trim() !== '') {
-      console.log(input);
+      fetchSupabaseFunction('post_chat_message', {
+        user_id,
+        channel_id: chat_id,
+        message_content: input
+      });
       setInput('');
     }
   };
