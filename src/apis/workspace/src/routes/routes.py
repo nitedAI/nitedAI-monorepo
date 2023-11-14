@@ -18,6 +18,13 @@ routes = {
         "methods": ["POST"],
         "endpoint": "/token?grant_type=password"
     },
+    #add an entry for a new route for an agent response, built with the same structure as the other routes
+    "response": {
+        "name": "response",
+        "base": "/agent/response",
+        "params": "",
+        "methods": ["POST"]
+    },
 }
 
 for route in routes:
