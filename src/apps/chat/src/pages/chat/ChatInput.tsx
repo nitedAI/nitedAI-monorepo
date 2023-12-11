@@ -4,26 +4,16 @@ import { List, Popover, TextField, ListItemText, ListItemButton } from '@mui/mat
 
 interface Participant {
   id: string;
-  name: string;
+  display: string;
 }
-
-// Assume this function fetches participants and AI agents
-const getChatParticipants = async (): Promise<Participant[]> =>
-  // Replace with actual logic to fetch participants
-   [
-    { id: '1', name: 'John Doe' },
-    { id: '2', name: 'AI Agent' },
-  ]
-;
 
 interface ChatInputProps {
   inputValue: string;
   setInputValue: React.Dispatch<React.SetStateAction<string>>;
   allParticipants: Participant[];
-  setAllParticipants: React.Dispatch<React.SetStateAction<Participant[]>>;
 }
 
-const ChatInput = ({ inputValue, setInputValue, allParticipants, setAllParticipants }: ChatInputProps) => {
+const ChatInput = ({ inputValue, setInputValue, allParticipants }: ChatInputProps) => {
   const [filteredParticipants, setFilteredParticipants] = useState<Participant[]>([]);
   const [mentionedUsers, setMentionedUsers] = useState<string[]>([]);
   const [popoverOpen, setPopoverOpen] = useState<boolean>(false);
@@ -34,14 +24,10 @@ const ChatInput = ({ inputValue, setInputValue, allParticipants, setAllParticipa
   const maxRows = 5;
 
   useEffect(() => {
-    getChatParticipants().then(setAllParticipants);
-  }, []);
-
-  useEffect(() => {
     const atIndex = inputValue.lastIndexOf('@');
     if (atIndex !== -1) {
       const search = inputValue.substring(atIndex + 1).toLowerCase();
-      const matchedParticipants = allParticipants.filter((participant) => participant.name.toLowerCase().includes(search));
+      const matchedParticipants = allParticipants.filter((participant) => participant.display.toLowerCase().includes(search));
       setFilteredParticipants(matchedParticipants);
       setPopoverOpen(matchedParticipants.length > 0);
       setHighlightedIndex(0); // Reset highlighted index
@@ -52,7 +38,7 @@ const ChatInput = ({ inputValue, setInputValue, allParticipants, setAllParticipa
 
   useEffect(() => {
     // Update mentioned users based on current input value
-    const currentMentions = allParticipants.filter((participant) => inputValue.includes(`@${participant.name}`)).map((participant) => participant.id);
+    const currentMentions = allParticipants.filter((participant) => inputValue.includes(`@${participant.display}`)).map((participant) => participant.id);
     setMentionedUsers(currentMentions);
   }, [inputValue, allParticipants, mentionedUsers]);
 
@@ -65,7 +51,7 @@ const ChatInput = ({ inputValue, setInputValue, allParticipants, setAllParticipa
 
   const handleSelectParticipant = (participant: Participant) => {
     const atIndex = inputValue.lastIndexOf('@');
-    const newValue = `${inputValue.substring(0, atIndex)}@${participant.name} `;
+    const newValue = `${inputValue.substring(0, atIndex)}@${participant.display} `;
     setInputValue(newValue);
     setMentionedUsers((prev) => [...prev, participant.id]);
     setPopoverOpen(false);
@@ -135,7 +121,7 @@ const ChatInput = ({ inputValue, setInputValue, allParticipants, setAllParticipa
               selected={index === highlightedIndex}
               disabled={mentionedUsers.includes(participant.id)}
             >
-              <ListItemText primary={participant.name} />
+              <ListItemText primary={participant.display} />
             </ListItemButton>
           ))}
         </List>

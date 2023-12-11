@@ -1,8 +1,8 @@
 import { Helmet } from 'react-helmet-async';
 import { useParams } from 'react-router-dom';
 import { useRef, useMemo, useState, useEffect } from 'react';
-import { useGetAuthUser, useGetMessageByChannelId } from '@hooks';
 import { fToNow, stringAvatar, fetchSupabaseFunction } from '@utils';
+import { useGetAuthUser, useGetAllAgents, useGetMessageByChannelId, useGetUsersFromChannelId } from '@hooks';
 
 import SendIcon from '@mui/icons-material/Send';
 import { Box, Grid, Button, Avatar, Typography } from '@mui/material';
@@ -23,11 +23,13 @@ interface MessageProps {
 
 interface Participant {
   id: string;
-  name: string;
+  display: string;
 }
 
 export default function Chat() {
   const [allParticipants, setAllParticipants] = useState<Participant[]>([]);
+  const users = useGetUsersFromChannelId();
+  const allAgents = useGetAllAgents();
   const [input, setInput] = useState('');
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
   const messages: MessageTypes[] = useGetMessageByChannelId();
@@ -38,6 +40,12 @@ export default function Chat() {
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
+
+  useEffect(() => {
+    if (users.length > 0 && allAgents.length > 0) {
+      setAllParticipants([...users, ...allAgents]);
+    }
+  }, [users, allAgents]);
 
   useEffect(() => {
     scrollToBottom();
@@ -73,20 +81,26 @@ export default function Chat() {
     setInput('');
   };
 
-  const extractMentions = (text: string): string[] => {
-    const mentionRegex = /@\w+/g; // Adjust this regex to match your mention format
-    return text.match(mentionRegex) || [];
-  };
+    const extractMentions = (text: string): string[] => text
+        .split('@')
+        .slice(1)
+        .map((potentialMention) => findLongestMatch(potentialMention.trim()))
+        .filter((match) => match !== null)
+        .map((match) => `@${match}`);
+
+    const findLongestMatch = (text: string): string | null => allParticipants.reduce((longestMatch, participant) => text.startsWith(participant.display) && participant.display.length > (longestMatch?.length || 0) ? participant.display : longestMatch, null);
+
+
 
   const isUserMention = (mention: string): boolean => {
-    // Implement logic to check if the mention corresponds to a user
-    return allParticipants.some((participant) => `@${participant.name}` === mention);
+    const mentionWithoutAt = mention.substring(1); // Remove leading '@'
+    return users.some((participant) => participant.display === mentionWithoutAt);
   };
 
   const isAgentMention = (mention: string): boolean => {
-    // Implement logic to check if the mention corresponds to an AI agent
-    // This might be based on a list of AI agent names or other criteria
-    return mention === '@AI_Agent'; // Example
+    const mentionWithoutAt = mention.substring(1);
+    // Assuming you have a way to identify AI agents' full names
+    return allAgents.some((agent) => agent.display === mentionWithoutAt);
   };
 
   const notifyUser = (mention: string) => {
@@ -122,7 +136,6 @@ export default function Chat() {
                 inputValue={input}
                 setInputValue={setInput}
                 allParticipants={allParticipants}
-                setAllParticipants={setAllParticipants}
               />
             </Grid>
             <Grid item xs={2}>
