@@ -6,9 +6,8 @@ import { useMockedUser } from 'src/hooks/use-mocked-user';
 import Scrollbar from 'src/components/scrollbar';
 import { NavSectionVertical } from 'src/components/nav-section';
 
-import { NAV } from '../config-layout';
+import { NAV, HEADER } from '../config-layout';
 import { useNavData } from './config-navigation';
-import { cp } from 'fs';
 
 // ----------------------------------------------------------------------
 
@@ -27,7 +26,21 @@ export default function NavVertical() {
         },
       }}
     >
-
+      <Box
+        sx={{
+          height: { xs: 1, lg: HEADER.H_DESKTOP },
+          position: { lg: 'sticky' },
+          top: { lg: 0 },
+          display: { xs: 'none', lg: 'flex' },
+          alignItems: 'center',
+          borderBottom: (theme) => `solid 1px ${theme.palette.divider}`,
+          paddingLeft: 3,
+          color: 'text.primary',
+          fontWeight: 'fontWeightBold',
+        }}
+      >
+        Channel Name
+      </Box>
       <NavSectionVertical
         data={navData}
         slotProps={{
@@ -42,7 +55,7 @@ export default function NavVertical() {
       sx={{
         flexShrink: { lg: 0 },
         width: { lg: NAV.W_VERTICAL },
-        backgroundColor: 'rgba(0, 0, 0, .1)',
+        backgroundColor: '#212B36',
       }}
     >
       <Stack
@@ -50,7 +63,6 @@ export default function NavVertical() {
           height: 1,
           position: 'fixed',
           width: NAV.W_VERTICAL,
-          borderRight: (theme) => `dashed 1px ${theme.palette.divider}`,
         }}
       >
         {renderContent}

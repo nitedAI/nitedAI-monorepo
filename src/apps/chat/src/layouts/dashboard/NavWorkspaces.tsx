@@ -6,7 +6,7 @@ import { hideScroll } from 'src/theme/css';
 
 import NavMini from 'src/components/NavMini';
 
-import { NAV } from '../config-layout';
+import { NAV, HEADER } from '../config-layout';
 
 // ----------------------------------------------------------------------
 
@@ -26,8 +26,22 @@ export default function NavWorkspaces() {
       sx={{
         flexShrink: { lg: 0 },
         width: { lg: NAV.W_MINI },
+        flexDirection: { lg: 'row' },
       }}
     >
+      <Box
+        sx={{
+          height: { xs: 1, lg: HEADER.H_DESKTOP },
+          position: { lg: 'sticky' },
+          top: { lg: 0 },
+          display: { xs: 'none', lg: 'flex' },
+          alignItems: 'center',
+          justifyContent: 'center',
+          borderBottom: (theme) => `solid 1px ${theme.palette.divider}`,
+        }}
+      >
+        LOGO
+      </Box>
       <Stack
         sx={{
           pt: 1,
@@ -36,7 +50,6 @@ export default function NavWorkspaces() {
           position: 'fixed',
           backgroundColor: 'rgba(0, 0, 0, .2)',
           width: NAV.W_MINI,
-          borderRight: (theme) => `dashed 1px ${theme.palette.divider}`,
           ...hideScroll.x,
         }}
       >
