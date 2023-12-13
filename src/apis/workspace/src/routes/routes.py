@@ -25,6 +25,18 @@ routes = {
         "params": "",
         "methods": ["POST"]
     },
+    "create": {
+        "name": "create_agent",
+        "base": "/agent/create",
+        "params": "",
+        "methods": ["POST"]
+    },
+    "retrieve": {
+        "name": "retrieve_agent",
+        "base": "/agent/retrieve",
+        "params": "",
+        "methods": ["POST"]
+    },
 }
 
 for route in routes:

@@ -23,5 +23,5 @@ export function useGetUsersFromChannelId(channelId?: string) {
     params: { channel_uuid: chatId },
   });
 
-  return data;
+  return data || [];
 }

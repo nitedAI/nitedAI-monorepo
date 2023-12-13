@@ -1,11 +1,6 @@
 from flask import Blueprint, jsonify, request
 from src.routes.routes import routes
 from src.datasets.db import supabase
-from dotenv import load_dotenv
-
-load_dotenv()
-
-import json
 
 
 # Use the same key as in the routes.py dictionary

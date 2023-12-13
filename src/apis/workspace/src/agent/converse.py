@@ -25,7 +25,7 @@ def check_if_agent(participant_uuid):
     try:
         response = supabase.rpc('is_agent', {'participant_uuid': participant_uuid}).execute()
     except Exception as e:
-        return None    
+        return None
 
     # Extract and return the data from the response
     return response.data

@@ -9,3 +9,4 @@ export * from './useGetChannelsByWorkspaceId';
 export * from './useGetChannelsByWorkspaceSlug';
 export * from './useGetMessageByChannelId';
 export * from './useGetUsersFromChannelId';
+export * from './useGetAiChatResponse';

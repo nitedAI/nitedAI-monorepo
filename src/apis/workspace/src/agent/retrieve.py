@@ -37,7 +37,9 @@ def retrieval_agent():
         participant_uuid = data.get("agent_id")
 
         # Get conversation history from database
-        message_data_response = supabase.rpc('get_last_n_messages_by_channel_id', {'channel_uuid': data["channel_id"], 'last_n_messages': 15}).execute()
+        message_data_response = supabase.rpc('get_last_n_messages_by_channel_id', {
+                                             'channel_uuid': channel_id,
+                                             'last_n_messages': 15}).execute()
         print("DATABASE RESPONSE: ", message_data_response)
         message_data_list = message_data_response.data
 
@@ -47,7 +49,7 @@ def retrieval_agent():
             for message in message_data_list:
                 f.write(message['content'] + "\n")
             temp_filename = f.name
-        
+
         #load and parse docs
         loader = TextLoader(temp_filename)
         documents = loader.load()
@@ -67,7 +69,7 @@ def retrieval_agent():
         )
 
         #initialize the query vector
-        
+
         matched_docs = vector_store.similarity_search(data["message"])
         print("AI Response: "+ matched_docs[0].page_content)
 

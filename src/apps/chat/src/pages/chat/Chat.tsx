@@ -2,7 +2,7 @@ import { Helmet } from 'react-helmet-async';
 import { useParams } from 'react-router-dom';
 import { useRef, useMemo, useState, useEffect } from 'react';
 import { fToNow, stringAvatar, fetchSupabaseFunction } from '@utils';
-import { useGetAuthUser, useGetAllAgents, useGetMessageByChannelId, useGetUsersFromChannelId } from '@hooks';
+import { useGetAuthUser, useGetAllAgents, useGetMessageByChannelId, useGetUsersFromChannelId, useGetAiChatResponse } from '@hooks';
 
 import SendIcon from '@mui/icons-material/Send';
 import { Box, Grid, Button, Avatar, Typography } from '@mui/material';
@@ -36,6 +36,7 @@ export default function Chat() {
   const reversedMessages = useMemo(() => [...messages].reverse(), [messages]);
   const user_id = useGetAuthUser();
   const { chat_id } = useParams();
+  const { data, getAiChatResponse } = useGetAiChatResponse();
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -111,6 +112,14 @@ export default function Chat() {
   const requestAIResponse = (mention: string) => {
     // Implement logic to send a request to the AI agent
     console.log(`Request AI agent response for: ${mention}`);
+    const agent = allAgents.find((agent) => agent.display === mention.substring(1));
+    console.log(agent);
+    getAiChatResponse({
+      message: input,
+      channel_id: chat_id,
+      invoker_id: user_id,
+      participant_id: agent?.id,
+    });
   };
 
   return (
