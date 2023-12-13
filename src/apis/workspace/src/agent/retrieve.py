@@ -36,7 +36,10 @@ def retrieval_agent():
         participant_uuid = data.get("agent_id")
 
         # Get conversation history from database
-        message_data_response = supabase.rpc('get_last_n_messages_by_channel_id', {'channel_uuid': channel_id, 'last_n_messages': 15}).execute()
+        message_data_response = supabase.rpc('get_last_n_messages_by_channel_id', {
+                                             'channel_uuid': channel_id,
+                                             'last_n_messages': 15}).execute()
+        print("DATABASE RESPONSE: ", message_data_response)
         message_data_list = message_data_response.data
 
         # Create a temporary file to store the messages
@@ -44,8 +47,8 @@ def retrieval_agent():
             for message in message_data_list:
                 f.write(message['content'] + "\n")
             temp_filename = f.name
-        
-        # Load and parse documents
+
+        #load and parse docs
         loader = TextLoader(temp_filename)
         documents = loader.load()
         text_splitter = CharacterTextSplitter(chunk_size=30, chunk_overlap=0)

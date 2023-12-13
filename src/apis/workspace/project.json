@@ -61,7 +61,7 @@
     "start": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "poetry run python app.py",
+        "command": "poetry run python app.py --verbose",
         "cwd": "./src/apis/workspace"
       }
     }
