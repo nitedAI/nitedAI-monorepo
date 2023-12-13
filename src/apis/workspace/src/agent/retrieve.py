@@ -10,14 +10,12 @@ from langchain.vectorstores import SupabaseVectorStore
 from langchain.document_loaders import TextLoader
 from langchain.text_splitter import CharacterTextSplitter
 import tempfile
-
-embeddings = OpenAIEmbeddings()
-
 import os
+from openai import OpenAI
 from dotenv import load_dotenv
-import openai
+
+# Load environment variables
 load_dotenv()
-openai.api_key = os.getenv("OPENAI_API_KEY")
 
 # Initialize OpenAI client
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
@@ -26,37 +24,34 @@ client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 base = "retrieve"
 retrieve_bp = Blueprint(base, __name__)
 
+embeddings = OpenAIEmbeddings()
+
 @retrieve_bp.route(routes[base]["base"], methods=routes[base]["methods"])
 def retrieval_agent():
     try:
         # Get the message info from the request
         data = request.get_json()
-        print("data: ", data)
         channel_id = data.get("channel_id")
         user_message = data.get("message")
         participant_uuid = data.get("agent_id")
 
         # Get conversation history from database
-        message_data_response = supabase.rpc('get_last_n_messages_by_channel_id', {'channel_uuid': data["channel_id"], 'last_n_messages': 15}).execute()
-        print("DATABASE RESPONSE: ", message_data_response)
+        message_data_response = supabase.rpc('get_last_n_messages_by_channel_id', {'channel_uuid': channel_id, 'last_n_messages': 15}).execute()
         message_data_list = message_data_response.data
 
-        #next we need to save the messages locally to calculate vectors
-        #create a temporary file to store the messages
+        # Create a temporary file to store the messages
         with tempfile.NamedTemporaryFile(mode='w', delete=False) as f:
             for message in message_data_list:
                 f.write(message['content'] + "\n")
             temp_filename = f.name
         
-        #load and parse docs
+        # Load and parse documents
         loader = TextLoader(temp_filename)
         documents = loader.load()
         text_splitter = CharacterTextSplitter(chunk_size=30, chunk_overlap=0)
         docs = text_splitter.split_documents(documents)
 
-        print("docs: ", docs)
-
-        #initialize the vector store
+        # Initialize the vector store
         vector_store = SupabaseVectorStore.from_documents(
             docs,
             embeddings,
@@ -66,29 +61,40 @@ def retrieval_agent():
             chunk_size=500,
         )
 
-        #initialize the query vector
-        
-        matched_docs = vector_store.similarity_search(data["message"])
-        print("AI Response: "+ matched_docs[0].page_content)
+        # Retrieve the most relevant document
+        matched_docs = vector_store.similarity_search(user_message)
+        document_content = matched_docs[0].page_content
 
-        os.remove(temp_filename)
+        # Combine the document content with the user message and generate AI response
+        messages = [
+            {"role": "system", "content": document_content},
+            {"role": "user", "content": user_message}
+        ]
 
-        #insert the AI response into the database
+        response = client.chat.completions.create(
+            model="gpt-3.5-turbo",
+            messages=messages,
+            max_tokens=150
+        )
+
+        ai_response = response.choices[0].message.content.strip()
+
+        # Insert the AI response into the database
         supabase.rpc('insert_message', {
             'channel_uuid': channel_id,
             'participant_uuid': participant_uuid,
-            'message_content': matched_docs[0].page_content,
+            'message_content': ai_response,
             'is_agent': True
         }).execute()
 
-        return jsonify({"message": "agent responded successfully",
-                        "response": matched_docs[0].page_content})
+        os.remove(temp_filename)
+
+        return jsonify({"message": "agent responded successfully", "response": ai_response})
+
     except Exception as e:
         print(f"An error occurred: {e}")
-        return jsonify({"error": "Error retrieving agent response"}), 500
-
-
-
+        os.remove(temp_filename)
+        return jsonify({"error": "Error processing AI response"}), 500
 
 
 
