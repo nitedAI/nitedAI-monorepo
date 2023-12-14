@@ -22,12 +22,14 @@ def get_response():
     # Get the message info from the request
     data = request.get_json()
     print("data: ", data)
+    channel_id = data.get("channel_id")
+    participant_uuid = data.get("participant_id")
 
     # Get conversation history from database
-    message_data_response = supabase.rpc('get_last_n_messages_by_channel_id', {'channel_uuid': data["channel_id"], 'last_n_messages': 15}).execute()
+    message_data_response = supabase.rpc('get_last_n_messages_by_channel_id', {'channel_uuid': channel_id, 'last_n_messages': 15}).execute()
     print("DATABASE RESPONSE: ", message_data_response)
     message_data_list = message_data_response.data  # If this is already a list of dictionaries
-    
+
     # Check the type of message_data_list to ensure it's what we expect
     print("message data list type: ", type(message_data_list))
 
@@ -36,7 +38,7 @@ def get_response():
         f"{message['user_username'] if message['user_username'] is not None else 'participant'}: {message['content']}"
         for message in message_data_list
     ]
-    
+
     # Message processing
     message = data.get('message', '').replace("@nitedAI", "")  # Default to an empty string if 'message' is not found
 
@@ -60,9 +62,9 @@ def get_response():
     LLMs are a kind of deep neural network. They have been demonstrated to embed knowledge, abilities, and concepts, ranging from reasoning to planning, and even to theory of mind. These are called latent abilities and latent content, collectively referred to as latent space. The latent space of an LLM can be activated with the correct series of words as inputs, which will create a useful internal state of the neural network. This is not unlike how the right shorthand cues can prime a human mind to think in a certain way. Like human minds, LLMs are associative, meaning you only need to use the correct associations to "prime" another model to think in the same way.
 
     # METHODOLOGY
-    Render the input as a distilled list of succinct statements, assertions, associations, concepts, analogies, and metaphors. The idea is to capture as much, conceptually, as possible about the conversation but with as few words as possible. Write it in a way that makes sense to you, as the future audience will be another language model, not a human. Use complete sentences. 
-    
-    # USER 
+    Render the input as a distilled list of succinct statements, assertions, associations, concepts, analogies, and metaphors. The idea is to capture as much, conceptually, as possible about the conversation but with as few words as possible. Write it in a way that makes sense to you, as the future audience will be another language model, not a human. Use complete sentences.
+
+    # USER
     What follows is the conversation history to be rendered as an SPR:
     {conversation_history}
     """
@@ -92,7 +94,7 @@ def get_response():
     LLMs are a kind of deep neural network. They have been demonstrated to embed knowledge, abilities, and concepts, ranging from reasoning to planning, and even to theory of mind. These are called latent abilities and latent content, collectively referred to as latent space. The latent space of an LLM can be activated with the correct series of words as inputs, which will create a useful internal state of the neural network. This is not unlike how the right shorthand cues can prime a human mind to think in a certain way. Like human minds, LLMs are associative, meaning you only need to use the correct associations to "prime" another model to think in the same way.
 
     # METHODOLOGY
-    What follows is a Sparse Priming Representation (SPR) of the conversation history followed by the message the USER sent you are to respond to: 
+    What follows is a Sparse Priming Representation (SPR) of the conversation history followed by the message the USER sent you are to respond to:
 
     {chat_spr}
 
@@ -109,8 +111,14 @@ def get_response():
     response = response_chain.run(chat_sparse_priming_rep)
 
 
+    supabase.rpc('insert_message', {
+        'channel_uuid': channel_id,
+        'participant_uuid': participant_uuid,
+        'message_content': response,
+        'is_agent': True
+    }).execute()
 
 
     return jsonify(response)
-    
+
 
