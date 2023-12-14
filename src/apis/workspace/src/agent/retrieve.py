@@ -33,7 +33,7 @@ def retrieval_agent():
         data = request.get_json()
         channel_id = data.get("channel_id")
         user_message = data.get("message")
-        participant_uuid = data.get("agent_id")
+        participant_uuid = data.get("participant_id")
 
         # Get conversation history from database
         message_data_response = supabase.rpc('get_last_n_messages_by_channel_id', {
