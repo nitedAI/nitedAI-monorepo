@@ -36,7 +36,7 @@ export default function Chat() {
   const reversedMessages = useMemo(() => [...messages].reverse(), [messages]);
   const user_id = useGetAuthUser();
   const { chat_id } = useParams();
-  const { data, getAiChatResponse } = useGetAiChatResponse();
+  const { getAiChatResponse } = useGetAiChatResponse();
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -64,10 +64,9 @@ export default function Chat() {
     }
   };
 
-
   const handleMentions = () => {
     const mentions = extractMentions(input);
-    console.log(mentions);
+    console.log({ mentions });
     mentions.forEach((mention) => {
       if (isUserMention(mention)) {
         // Trigger notification for the mentioned user
@@ -82,16 +81,14 @@ export default function Chat() {
     setInput('');
   };
 
-    const extractMentions = (text: string): string[] => text
-        .split('@')
-        .slice(1)
-        .map((potentialMention) => findLongestMatch(potentialMention.trim()))
-        .filter((match) => match !== null)
-        .map((match) => `@${match}`);
+  const extractMentions = (text: string): string[] => text
+      .split('@')
+      .slice(1)
+      .map((potentialMention) => findLongestMatch(potentialMention.trim()))
+      .filter((match) => match !== null)
+      .map((match) => `@${match}`);
 
-    const findLongestMatch = (text: string): string | null => allParticipants.reduce((longestMatch, participant) => text.startsWith(participant.display) && participant.display.length > (longestMatch?.length || 0) ? participant.display : longestMatch, null);
-
-
+  const findLongestMatch = (text: string): string | null => allParticipants.reduce((longestMatch, participant) => text.startsWith(participant.display) && participant.display.length > (longestMatch?.length || 0) ? participant.display : longestMatch, null);
 
   const isUserMention = (mention: string): boolean => {
     const mentionWithoutAt = mention.substring(1); // Remove leading '@'
@@ -110,15 +107,20 @@ export default function Chat() {
   };
 
   const requestAIResponse = (mention: string) => {
-    // Implement logic to send a request to the AI agent
     console.log(`Request AI agent response for: ${mention}`);
     const agent = allAgents.find((agent) => agent.display === mention.substring(1));
-    console.log(agent);
+    const api = {
+      'Agent Smith': 'response',
+      'Agent Neo': 'converse',
+      'Agent Altman': 'retrieve',
+    }[agent?.display];
+
     getAiChatResponse({
-      message: input,
+      api,
       channel_id: chat_id,
       invoker_id: user_id,
       participant_id: agent?.id,
+      message: input,
     });
   };
 
