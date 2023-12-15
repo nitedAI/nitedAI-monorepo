@@ -22,10 +22,10 @@ export type NavItemStateProps = {
 };
 
 export type NavItemBaseProps = {
-  id?: string;
+  id: string;
   title: string;
   path: string;
-  image?: string;
+  image?: string | null;
   info?: React.ReactElement | string;
   caption?: string;
   disabled?: boolean;
@@ -72,6 +72,6 @@ export type NavMiniProps = {
 
 export type NavAvatarProps = {
   title: string;
-  image?: string;
+  image?: string | null;
   invisible?: boolean;
 };

@@ -8,9 +8,10 @@ interface DynamicObject {
 export function getSession(key: string | Array<string>): DynamicObject {
   const sessionKey = typeof key === 'string' ? [key] : key;
 
-  const result = {};
+  const result: DynamicObject = {};
   sessionKey.forEach((k) => {
-    result[k] = validateAndGetJson(sessionStorage.getItem(k));
+    const item = sessionStorage.getItem(k);
+    result[k] = item !== null ? validateAndGetJson(item) : null;
   });
 
   return result;

@@ -9,7 +9,7 @@
       "outputs": ["{options.outputPath}"],
       "defaultConfiguration": "production",
       "options": {
-        "outputPath": "dist/src/apps/chat"
+        "outputPath": "./dist/apps/chat"
       },
       "configurations": {
         "development": {

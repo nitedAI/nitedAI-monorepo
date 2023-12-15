@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 
-import { Box, TextField, Button, Typography, Avatar, Grid, Paper } from '@mui/material';
 import SendIcon from '@mui/icons-material/Send';
+import { Box, Grid, Button, Avatar, TextField, Typography } from '@mui/material';
 
 const messages = [
   { id: 1, text: 'Hi there!', sender: 'user' },
@@ -19,7 +19,7 @@ export default function Chat() {
     }
   };
 
-  const handleInputChange = (event) => {
+  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setInput(event.target.value);
   };
 
@@ -57,7 +57,15 @@ export default function Chat() {
   );
 }
 
-function Message({ message }) {
+type MessageProps = {
+  message: {
+    id: number;
+    text: string;
+    sender: string;
+  };
+};
+
+function Message({ message }: MessageProps) {
   const isBot = message.sender === 'bot';
 
   return (

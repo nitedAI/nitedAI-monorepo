@@ -71,7 +71,11 @@ export default function JwtRegisterView() {
     } catch (error) {
       console.error(error);
       reset();
-      setErrorMsg(typeof error === 'string' ? error : error.message);
+      if (error instanceof Error) {
+        setErrorMsg(error.message);
+      } else {
+        setErrorMsg(typeof error === 'string' ? error : 'An unknown error occurred');
+      }
     }
   });
 

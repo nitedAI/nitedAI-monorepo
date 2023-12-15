@@ -1,8 +1,8 @@
 import { supabase } from '@utils/supabase';
 import { useMemo, useState, useEffect, useCallback } from 'react';
 
-import { AuthStateType } from '../../types';
 import { AuthContext } from './auth-context';
+import { AuthUserType, AuthStateType } from '../../types';
 
 // ----------------------------------------------------------------------
 
@@ -14,13 +14,23 @@ const initialState: AuthStateType = {
   error: null,
 };
 
+type SessionUserType = {
+  aud?: string;
+  avatar_url?: string | null;
+  created_at?: string;
+  description?: string;
+  updated_at?: string | null;
+  user_id?: string;
+  username?: string;
+  workspaces_quota?: number;
+};
+
 // ----------------------------------------------------------------------
 
 type Props = {
   children: React.ReactNode;
 };
 
-const STORAGE_KEY = 'accessToken';
 const USER_KEY = 'user';
 const WORKSPACES_KEY = 'workspaces';
 
@@ -30,18 +40,20 @@ export function AuthProvider({ children }: Props) {
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
       if (data?.session) dispatch({
+        ...state,
         session: data.session,
-        user: data.session.user,
+        user: transformToAuthUserType(data.session.user),
         loading: false,
         error: null,
       });
     });
 
     const { data } = supabase.auth.onAuthStateChange((_event) => {
-      dispatch({ loading: false });
+      dispatch({ ...state, loading: false });
     });
 
     return () => data.subscription.unsubscribe();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // LOGIN
@@ -74,12 +86,12 @@ export function AuthProvider({ children }: Props) {
   // REGISTER
   const register = useCallback(
     async (email: string, password: string, firstName: string, lastName: string) => {
-      const data = {
-        email,
-        password,
-        firstName,
-        lastName,
-      };
+      // const data = {
+      //   email,
+      //   password,
+      //   firstName,
+      //   lastName,
+      // };
 
     },
     []
@@ -117,4 +129,17 @@ export function AuthProvider({ children }: Props) {
   );
 
   return <AuthContext.Provider value={memoizedValue}>{children}</AuthContext.Provider>;
+}
+
+function transformToAuthUserType(user: SessionUserType): AuthUserType {
+  return {
+    aud: user.aud || 'default-aud',
+    avatar_url: user.avatar_url || null,
+    created_at: user.created_at || new Date().toISOString(),
+    description: user.description || '',
+    updated_at: user.updated_at || null,
+    user_id: user.user_id || 'default-user-id',
+    username: user.username || 'default-username',
+    workspaces_quota: user.workspaces_quota || 0,
+  };
 }

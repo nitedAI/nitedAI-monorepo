@@ -1,10 +1,8 @@
-import { paths } from 'src/routes/paths';
-
 // API
 // ----------------------------------------------------------------------
 
 export const HOST_API = import.meta.env.VITE_HOST_API;
-export const ASSETS_API = import.meta.env.VITE_ASSETS_API;
+// export const ASSETS_API = import.meta.env.VITE_ASSETS_API;
 
 export const AUTH0_API = {
   clientId: import.meta.env.VITE_AUTH0_CLIENT_ID,

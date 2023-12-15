@@ -12,7 +12,7 @@ interface GetSupabaseRealtimeSubscription {
 }
 
 export function getSupabaseRealtimeSubscription({
-  channel,
+  channel = '3dc4486d-6ef2-4b67-a64e-51f9be55984a',
   event = '*',
   schema = 'public',
   updateCallback,

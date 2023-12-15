@@ -2,7 +2,7 @@ import { Helmet } from 'react-helmet-async';
 import { useParams } from 'react-router-dom';
 import { useRef, useMemo, useState, useEffect } from 'react';
 import { fToNow, stringAvatar, fetchSupabaseFunction } from '@utils';
-import { useGetAuthUser, useGetAllAgents, useGetMessageByChannelId, useGetUsersFromChannelId, useGetAiChatResponse } from '@hooks';
+import { useGetAuthUser, useGetAllAgents, useGetAiChatResponse, useGetMessageByChannelId, useGetUsersFromChannelId } from '@hooks';
 
 import SendIcon from '@mui/icons-material/Send';
 import { Box, Grid, Button, Avatar, Typography } from '@mui/material';
@@ -32,7 +32,7 @@ export default function Chat() {
   const allAgents = useGetAllAgents();
   const [input, setInput] = useState('');
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
-  const messages: MessageTypes[] = useGetMessageByChannelId();
+  const messages = useGetMessageByChannelId();
   const reversedMessages = useMemo(() => [...messages].reverse(), [messages]);
   const user_id = useGetAuthUser();
   const { chat_id } = useParams();
@@ -81,14 +81,20 @@ export default function Chat() {
     setInput('');
   };
 
-  const extractMentions = (text: string): string[] => text
+  const extractMentions = (text: string): string[] =>
+    text
       .split('@')
       .slice(1)
       .map((potentialMention) => findLongestMatch(potentialMention.trim()))
       .filter((match) => match !== null)
       .map((match) => `@${match}`);
 
-  const findLongestMatch = (text: string): string | null => allParticipants.reduce((longestMatch, participant) => text.startsWith(participant.display) && participant.display.length > (longestMatch?.length || 0) ? participant.display : longestMatch, null);
+  const findLongestMatch = (text: string): string | null =>
+    allParticipants.reduce(
+      (longestMatch, participant) =>
+        text.startsWith(participant.display) && participant.display.length > longestMatch.length ? participant.display : longestMatch,
+      '', // Initialize with an empty string
+    ) || null;
 
   const isUserMention = (mention: string): boolean => {
     const mentionWithoutAt = mention.substring(1); // Remove leading '@'
@@ -108,13 +114,15 @@ export default function Chat() {
 
   const requestAIResponse = (mention: string) => {
     console.log(`Request AI agent response for: ${mention}`);
-    const agent = allAgents.find((agent) => agent.display === mention.substring(1));
-    const api = {
+    const agent = allAgents.find((agt) => agt.display === mention.substring(1));
+    type AgentApiKeys = 'Agent Smith' | 'Agent Neo' | 'Agent Altman';
+    const apiObj = {
       'Agent Smith': 'response',
       'Agent Neo': 'converse',
       'Agent Altman': 'retrieve',
-    }[agent?.display];
+    };
 
+    const api = apiObj[agent?.display as AgentApiKeys];
     getAiChatResponse({
       api,
       channel_id: chat_id,
@@ -143,11 +151,7 @@ export default function Chat() {
         <Box sx={{ p: 2, backgroundColor: 'background.default' }}>
           <Grid container spacing={2}>
             <Grid item xs={10}>
-              <ChatInput
-                inputValue={input}
-                setInputValue={setInput}
-                allParticipants={allParticipants}
-              />
+              <ChatInput inputValue={input} setInputValue={setInput} allParticipants={allParticipants} />
             </Grid>
             <Grid item xs={2}>
               <Button fullWidth color="primary" variant="contained" endIcon={<SendIcon />} onClick={handleSend}>

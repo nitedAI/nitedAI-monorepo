@@ -6,6 +6,7 @@ import Link from '@mui/material/Link';
 import { alpha, styled } from '@mui/material/styles';
 import ListItemButton from '@mui/material/ListItemButton';
 
+// eslint-disable-next-line @nx/enforce-module-boundaries
 import { RouterLink } from 'src/routes/components';
 
 import NavAvatar from './NavAvatar';

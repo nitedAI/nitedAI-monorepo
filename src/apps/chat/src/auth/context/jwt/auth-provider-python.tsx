@@ -21,7 +21,17 @@ enum Types {
   LOGOUT = 'LOGOUT',
 }
 
-type Workspaces = Array<object>;
+type Workspace = {
+  disabled: boolean;
+  id: string;
+  image: string | null;
+  info: number;
+  path: string;
+  title: string;
+};
+
+
+type Workspaces = Array<Workspace>;
 
 type Payload = {
   [Types.INITIAL]: {
@@ -45,11 +55,15 @@ type ActionsType = ActionMapType<Payload>[keyof ActionMapType<Payload>];
 const initialState: AuthStateType = {
   user: null,
   loading: true,
+  workspaces: [],
+  session: null,
+  error: null,
 };
 
-const reducer = (state: AuthStateType, action: ActionsType) => {
+const reducer = (state: AuthStateType, action: ActionsType): AuthStateType => {
   if (action.type === Types.INITIAL) {
     return {
+      ...state,
       loading: false,
       user: action.payload.user,
       workspaces: action.payload.workspaces
@@ -58,6 +72,7 @@ const reducer = (state: AuthStateType, action: ActionsType) => {
   if (action.type === Types.LOGIN) {
     return {
       ...state,
+      loading: false,
       user: action.payload.user,
       workspaces: action.payload.workspaces,
     };
@@ -65,12 +80,14 @@ const reducer = (state: AuthStateType, action: ActionsType) => {
   if (action.type === Types.REGISTER) {
     return {
       ...state,
+      loading: false,
       user: action.payload.user,
     };
   }
   if (action.type === Types.LOGOUT) {
     return {
       ...state,
+      loading: false,
       user: null,
     };
   }
@@ -100,8 +117,8 @@ export function AuthProvider({ children }: Props) {
         const sessionUser = sessionStorage.getItem(USER_KEY);
         const user = sessionUser ? JSON.parse(sessionUser) : {};
 
-        const sessionWOrkspaces = sessionStorage.getItem(USER_KEY);
-        const workspaces = sessionWOrkspaces ? JSON.parse(sessionWOrkspaces) : {};
+        const sessionWorkspaces = sessionStorage.getItem(USER_KEY);
+        const workspaces = sessionWorkspaces ? JSON.parse(sessionWorkspaces) : {};
 
         dispatch({
           type: Types.INITIAL,

@@ -1,8 +1,9 @@
+import { AuthError, PostgrestError } from '@supabase/supabase-js';
 import { LogoutOptions, PopupLoginOptions, RedirectLoginOptions } from '@auth0/auth0-react';
 
 // ----------------------------------------------------------------------
 
-export type ActionMapType<M extends { [index: string]: any }> = {
+export type ActionMapType<M extends { [index: string]: unknown }> = {
   [Key in keyof M]: M[Key] extends undefined
     ? {
         type: Key;
@@ -47,7 +48,7 @@ export type AuthStateType = {
   user: AuthUserType;
   workspaces: WorkspacesType;
   session: AuthSessionType;
-  error: string | null;
+  error: string | AuthError | PostgrestError | null;
 };
 
 // ----------------------------------------------------------------------

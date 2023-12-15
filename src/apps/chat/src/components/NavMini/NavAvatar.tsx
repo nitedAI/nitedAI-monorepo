@@ -38,7 +38,7 @@ export default function NavAvatar({ title, image, invisible = true }: NavAvatarP
   return (
     <Stack direction="row" spacing={2}>
       <StyledBadge overlap="circular" anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }} variant="dot" invisible={invisible}>
-        <Avatar
+        { image ? (<Avatar
           alt={title}
           src={image}
           variant="rounded"
@@ -46,7 +46,14 @@ export default function NavAvatar({ title, image, invisible = true }: NavAvatarP
             width: 48,
             height: 48,
           }}
-        />
+        />) : (<Avatar
+            alt={title}
+            variant="rounded"
+            sx={{
+              width: 48,
+              height: 48,
+            }}
+          />)}
       </StyledBadge>
     </Stack>
   );

@@ -1,5 +1,3 @@
-import { useBoolean } from '@hooks/useBoolean';
-
 import Box from '@mui/material/Box';
 
 import Main from './main';
@@ -14,11 +12,10 @@ type Props = {
 };
 
 export default function DashboardLayout({ children }: Props) {
-  const nav = useBoolean();
 
   return (
     <>
-      <Header onOpenNav={nav.onTrue} />
+      <Header />
 
       <Box
         sx={{

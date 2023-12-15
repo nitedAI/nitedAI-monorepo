@@ -6,8 +6,6 @@ import Stack from '@mui/material/Stack';
 
 import NavMiniList from './NavMiniList';
 
-
-
 // ----------------------------------------------------------------------
 
 function NavMini({ data, slotProps, ...other }: NavMiniProps) {

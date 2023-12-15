@@ -3,11 +3,11 @@
   "version": "0.0.0",
   "license": "UNLICENSED",
   "scripts": {
-    "chat:serve": "pnpm exec nx run chat:serve",
-    "maindb:start": "pnpm exec nx run maindb:start",
-    "maindb:stop": "pnpm exec nx run maindb:stop",
-    "maindb:status": "pnpm exec nx run maindb:status",
-    "api:workspace:start": "pnpm exec nx run workspace:start"
+    "chat:serve": "npx nx run chat:serve",
+    "maindb:start": "npx nx run maindb:start",
+    "maindb:stop": "npx nx run maindb:stop",
+    "maindb:status": "npx nx run maindb:status",
+    "api:workspace:start": "npx nx run workspace:start"
   },
   "private": true,
   "devDependencies": {

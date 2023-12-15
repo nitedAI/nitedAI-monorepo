@@ -4,11 +4,11 @@ import { useState } from 'react';
 const url = import.meta.env.VITE_HOST_API || 'http://localhost:5000';
 
 interface GetAiChatResponseArgs {
-  api?: 'response' | 'converse' | 'retrieve';
+  api?: string;
   message: string;
-  channel_id: string;
-  invoker_id: string;
-  participant_id: string;
+  channel_id?: string;
+  invoker_id: string | null;
+  participant_id?: string;
 }
 
 export function useGetAiChatResponse() {

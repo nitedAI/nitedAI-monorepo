@@ -62,14 +62,18 @@ export default function JwtLoginView() {
   const onSubmit = handleSubmit(async (data) => {
     try {
       await login?.(data.email, data.password);
-
       router.push(returnTo || PATH_AFTER_LOGIN);
     } catch (error) {
       console.error(error);
       reset();
-      setErrorMsg(typeof error === 'string' ? error : error.message);
+      if (error instanceof Error) {
+        setErrorMsg(error.message);
+      } else {
+        setErrorMsg(typeof error === 'string' ? error : 'An unknown error occurred');
+      }
     }
   });
+
 
   const renderHead = (
     <Stack spacing={2} sx={{ mb: 5 }}>

@@ -1,21 +1,13 @@
 import { useGetAuthUser } from '../useGetAuthUser';
 import { useFetchSupabaseRealtimeFunction } from '../useFetchSupabaseRealtimeFunction';
+import { NavItemBaseProps } from '@ts/Nav';
 
-interface Workspace {
-  id: string;
-  title: string;
-  image: string | null;
-  info: number;
-  path: string;
-  disabled: boolean;
-}
-
-type Workspaces = Array<Workspace>;
+type Workspaces = Array<NavItemBaseProps>;
 
 /**
  * Custom hook to fetch and subscribe to workspaces by user ID.
- * @param {Workspaces} data - Initial state for the workspaces.
- * @returns {Workspaces} The current state of workspaces.
+ * @param data - Initial state for the workspaces.
+ * @returns The current state of workspaces.
  */
 export function useGetWorkspacesByUserId(data: Workspaces) {
   const userId = useGetAuthUser();

@@ -1,9 +1,11 @@
-import { User, Session, Error } from '@supabase/supabase-js';
+import { User, Session, AuthError, PostgrestError } from '@supabase/supabase-js';
 import { LogoutOptions, PopupLoginOptions, RedirectLoginOptions } from '@auth0/auth0-react';
+
+import { AuthUserType } from './types';
 
 // ----------------------------------------------------------------------
 
-export type ActionMapType<M extends { [index: string]: any }> = {
+export type ActionMapType<M extends { [index: string]: unknown }> = {
   [Key in keyof M]: M[Key] extends undefined
     ? {
         type: Key;
@@ -27,7 +29,7 @@ export type AuthStateType = {
   loading?: boolean;
   user?: User | null;
   session?: Session | null;
-  error?: Error | null;
+  error?: string | AuthError | PostgrestError | null;
 };
 
 export type AuthResponseType = {

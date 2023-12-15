@@ -16,6 +16,7 @@ export default function NavMiniList({ data, depth = 1, slotProps }: NavListProps
     <>
       <NavItem
         ref={navRef}
+        id={`nav-item-${data.id}`}
         //
         title={data.title}
         path={data.path}

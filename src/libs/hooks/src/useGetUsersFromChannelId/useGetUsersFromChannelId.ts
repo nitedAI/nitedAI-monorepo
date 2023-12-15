@@ -4,8 +4,7 @@ import { useFetchSupabaseRealtimeFunction } from '../useFetchSupabaseRealtimeFun
 
 interface User {
   id: string;
-  username: string;
-  // Add any other relevant fields from your channels table
+  display: string;
 }
 
 type Users = Array<User>;
