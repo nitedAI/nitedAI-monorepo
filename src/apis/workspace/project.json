@@ -27,7 +27,7 @@
       "executor": "@nxlv/python:build",
       "outputs": ["{projectRoot}/dist"],
       "options": {
-        "outputPath": "./src/apis/workspace/dist",
+        "outputPath": "./dist/apis/workspace",
         "publish": false,
         "lockedVersions": true,
         "bundleLocalDependencies": true
